@@ -58,8 +58,7 @@
       <h2>Properties and Retaining Paths</h2>
 
       <pre class="brush: js">
-        // global scope
-        var person = new Person();
+        person = new Person();
         person.address = new Address();
       </pre>
       <button onclick="simpleExample()">Run</button>
@@ -195,6 +194,8 @@
     <section class="slide">
       <h2>Take Aways</h2>
       <ul>
+        <li style="margin-bottom: 1em;">JS Garbage Collection is in great shape</li>
+        <li style="color: #888">but</li>
         <li>Careful with global scope</li>
         <li>Favor short object life times</li>
         <li>Avoid mixing objects with different life times</li>
@@ -210,5 +211,10 @@
       <a href="http://github.com/tf/javascript-memory-talk" rel="author">github.com/tf/javascript-memory-talk</a>
     </section>
 
+    <section class="slide">
+      <h2>Mixing short and long lived Objects</h2>
+
+      <img src="images/long_lived.png">
+    </section>
   </body>
 </html>
