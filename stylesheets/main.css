@@ -20,7 +20,7 @@ body {
   border: none;
 }
 
-h1.demo {
+.last h1 {
   font-size: 3em;
 }
 
@@ -40,6 +40,10 @@ a[rel] {
   color: #000;
   display: block;
   padding-top: 0.4em;
+}
+
+.last a {
+  color: #777;
 }
 
 a span {
