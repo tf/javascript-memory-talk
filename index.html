@@ -5,12 +5,22 @@
 
     <title>JavaScript Memory Management</title>
 
+    <link rel="stylesheet" href="stylesheets/shCore.css">
+    <link rel="stylesheet" href="stylesheets/shCoreDefault.css">
+    <link rel="stylesheet" href="stylesheets/shThemeDefault.css">
+
     <link rel="stylesheet" href="stylesheets/deck.core.css">
     <link rel="stylesheet" href="stylesheets/main.css">
 
     <script src="javascript/jquery-1.7.min.js"></script>
     <script src="javascript/modernizr.custom.js"></script>
+
     <script src="javascript/deck.core.js"></script>
+    <script src="javascript/deck.hash.js"></script>
+
+    <script src="javascript/shCore.js"></script>
+    <script src="javascript/shBrushJScript.js"></script>
+
     <script src="javascript/main.js"></script>
   </head>
   <body>
@@ -18,8 +28,8 @@
       <h1>JavaScript Memory Management</h1>
       <p>
         by
-        <a href="" rel="author">Vangelis Tsoumenis</a>
-        <a href="" rel="author">Tim Fischbach</a>
+        <a href="" rel="author">Vangelis Tsoumenis <span>@kioopi</span></a>
+        <a href="" rel="author">Tim Fischbach <span>@tfischbach</span></a>
       </p>
     </section>
 
@@ -35,52 +45,91 @@
     <section class="slide">
       <h2>GC Roots and Retaining Paths</h2>
 
-      <pre>
+      <pre class="brush: js">
         // global scope
-        var dog = new Dog();
+        var person = new Person();
+        person.address = new Address();
       </pre>
+      <button onclick="simpleExample()">Run</button>
+
+      <pre class="brush: js">
+        person = null;
+      </pre>
+      <button onclick="simpleExampleRelease()">Run</button>
     </section>
 
     <section class="slide">
       <h2>Closures and Retaining Paths</h2>
 
-      <pre>
+      <pre class="brush: js">
         var obj = {};
 
         (function() {
-          var dog = new Dog();
+          var person = new Person();
 
           obj.callback = function() {
-            dog.bark();
+            person.save();
           };
         }());
       </pre>
+      <button onclick="closurePath()">Run</button>
     </section>
 
     <section class="slide">
       <h2>DOM Elements are GC Roots</h2>
 
-      <pre>
+      <pre class="brush: js">
         (function() {
-          var button = document.getElementById('button'),
+          var link = document.getElementById('the_link'),
               dog = new Dog();
 
-          button.addEventListener('click', function() {
+          link.addEventListener('click', function() {
             dog.bark();
           });
         }());
       </pre>
+
+      <button onclick="domRoot()">Run</button>
+      <button onclick="domRootRelease()">Delete Link</button>
+
+      <a id="the_link" href="" class="demo">the link</a>
     </section>
 
     <section class="slide">
-      <h2>Closures Subtleties</h2>
+      <h2>Circular References between DOM Objects and JS Objects</h2>
 
-      <pre>
+      <pre class="brush: js">
+        function Dog(element) {
+          this._element = element;
+
+          element.addEventListener('click', function() {
+            this.bark();
+          }.bind(this));
+        }
+
+        (function() {
+          var dog = new Dog(document.getElementById('another_link'));
+        }());
+      </pre>
+
+      <button onclick="domRootCircular()">Run</button>
+      <button onclick="domRootCircularRelease()">Delete Link</button>
+
+      <a id="another_link" href="" class="demo">another link</a>
+    </section>
+
+    <section class="slide">
+      <h2>Closure Subtleties</h2>
+
+      <pre class="brush: js">
         (function() {
           var dog = new Dog(),
-              cat = new Cat();
+              cat = new Cat(),
+              rabbit = new Rabbit(),
 
-          button.addEventListener('click', function() {
+              link = document.getElementById('yet_another_link');
+
+          link.addEventListener('click', function() {
             dog.bark();
           });
 
@@ -89,28 +138,60 @@
           });
         }());
       </pre>
+
+      <button onclick="closureSubtleties()">Run</button>
+      <button onclick="closureSubtletiesRelease()">Delete Link</button>
+
+      <a id="yet_another_link" href="" class="demo">yet another link</a>
     </section>
 
     <section class="slide">
       <h2>jQuery WTF</h2>
 
-      <pre>
-        var dog = new Dog();
+      <pre class="brush: js">
+        (function() {
+          var dog = new Dog();
 
-        $('#button').click(function() {
-          dog.bark();
-        });
+          $('#demo_link').click(function() {
+            dog.bark();
+          });
+        }());
 
-        document.getElementById('button').innerHTML = '';
+        document.querySelector('body').innerHTML = '';
       </pre>
 
-      <pre>
-        $('#button').html('');
+      <p>vs</p>
+
+      <pre class="brush: js">
+        $('body').html('');
       </pre>
+
+      <p>
+        see
+        <a href="https://github.com/jquery/jquery/blob/master/src/event.js#L139">
+          https://github.com/jquery/jquery/blob/master/src/event.js#L139
+        </a>
+      </p>
+
+      <button onclick="jQueryWTF()">Run</button>
+      <button onclick="jQueryWTFRelease()">Delete Link</button>
+      <button onclick="jQueryWTFReleaseRight()">Delete Link with jQuery</button>
+
+      <a id="demo_link" href="" class="demo">demo link</a>
     </section>
 
     <section class="slide">
-      <h2>DevTools Profiler Demo</h2>
+      <h2>Take Aways</h2>
+      <ul>
+        <li>Careful with global scope</li>
+        <li>Favor short object life times</li>
+        <li>Avoid mixing objects with different life times</li>
+        <li>Beware of singletons that hold event handlers</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h1 class="demo">Thank You</h1>
     </section>
 
   </body>
